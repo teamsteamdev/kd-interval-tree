@@ -1,0 +1,60 @@
+{
+  "name": "kd-interval-tree",
+  "version": "0.1.0",
+  "description": "Create and search layered interval trees",
+  "license": "MIT",
+  "author": {
+    "name": "Jack Steam",
+    "email": "jacksteamdev@gmail.com"
+  },
+  "main": "dist/kd-interval-tree.cjs.js",
+  "module": "dist/kd-interval-tree.esm.js",
+  "browser": "dist/kd-interval-tree.umd.js",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.3",
+    "babel-jest": "^21.2.0",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.6.1",
+    "husky": "^0.14.3",
+    "jest": "^21.2.1",
+    "lint-staged": "^6.0.0",
+    "prettier": "^1.9.2",
+    "rollup": "^0.50.0",
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-commonjs": "^8.2.6",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.1.0",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "standard": "^10.0.3"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "jest",
+    "precommit": "lint-staged",
+    "pretest": "standard"
+  },
+  "files": ["dist"],
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    }
+  },
+  "lint-staged": {
+    "*.{js}": [
+      "prettier --no-semi --single-quote --write",
+      "standard --fix",
+      "git add"
+    ],
+    "*.{json,css,md}": ["prettier --write", "git add"]
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  },
+  "standard": {
+    "parser": "babel-eslint",
+    "ignore": ["node_modules/**", "dist/"]
+  }
+}
