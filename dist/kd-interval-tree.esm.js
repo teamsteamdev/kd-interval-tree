@@ -25,7 +25,7 @@ const getPairs$1 = _.chunk(2);
  * @returns {function(Number[], number): array}
  */
 const search = trees => (interval, i) => {
-  console.log('search');
+  // console.log('search')
   const [low, high] = interval.sort();
   const result = trees[i].search(low, high);
   return result;
@@ -40,10 +40,14 @@ const search = trees => (interval, i) => {
  * @param {number[]}    ranges   Pairs of numbers correlating to the trees param. Each pair represents an interval to search within.
  * @returns
  */
-const searchTrees = trees => (operator, ranges) => {
-  console.log('searchTrees');
+const searchTrees = (trees, universe) => (operator, ranges) => {
+  // console.log('searchTrees')
   const pairs = getPairs$1(ranges);
   const results = pairs.map(search(trees));
+
+  if (results.length === 1) {
+    results.push(universe);
+  }
 
   const operationResult = operator(...results);
   return operationResult;
@@ -69,7 +73,7 @@ const getPairs = _.chunk(2);
  * @returns {searchTrees}
  */
 const createTrees = (keys, items) => {
-  console.log('createTrees');
+  // console.log('createTrees')
   if (keys.length % 2 !== 0) {
     throw new Error(`Expected keys.length to be an even number. keys.length: ${keys.length}`);
   }
@@ -81,7 +85,7 @@ const createTrees = (keys, items) => {
     return tree;
   });
 
-  const partial = searchTrees$1(trees);
+  const partial = searchTrees$1(trees, items);
   partial.count = trees.length;
   partial.trees = trees;
 

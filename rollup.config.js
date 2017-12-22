@@ -29,7 +29,7 @@ export default [
   // CommonJS (for Node) and ES module (for bundlers) build.
   {
     input: 'src/main.js',
-    external: ['zlib', 'fs', 'http', 'https', 'url'],
+    external: ['lodash/fp', 'node-interval-tree', 'lodash/isError'],
     output: [
       { file: pkg.main, format: 'cjs' },
       { file: pkg.module, format: 'es' }
