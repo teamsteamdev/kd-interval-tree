@@ -10,7 +10,7 @@ const getPairs = _.chunk(2)
 /**
  * Create multiple interval trees. Can be partially applied for multiple sets of items.
  *
- * @param {String[]} keys - Array of alternating "high" and "low" property names
+ * @param {String[]} keys - Array of alternating "low" and "high" property names
  * @param {Object[]} items - Array of objects with properties listed in keys argument
  * @returns {searchTrees}
  */
