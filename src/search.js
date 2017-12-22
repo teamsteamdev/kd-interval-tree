@@ -24,14 +24,10 @@ const search = trees => (interval, i) => {
  * @param {number[]}    ranges   Pairs of numbers correlating to the trees param. Each pair represents an interval to search within.
  * @returns
  */
-const searchTrees = (trees, universe) => (operator, ranges) => {
+const searchTrees = trees => (operator, ranges) => {
   // console.log('searchTrees')
   const pairs = getPairs(ranges)
   const results = pairs.map(search(trees))
-
-  if (results.length === 1) {
-    results.push(universe)
-  }
 
   const operationResult = operator(...results)
   return operationResult
