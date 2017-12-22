@@ -44,14 +44,10 @@ const search = trees => (interval, i) => {
  * @param {number[]}    ranges   Pairs of numbers correlating to the trees param. Each pair represents an interval to search within.
  * @returns
  */
-const searchTrees = (trees, universe) => (operator, ranges) => {
+const searchTrees = trees => (operator, ranges) => {
   // console.log('searchTrees')
   const pairs = getPairs$1(ranges);
   const results = pairs.map(search(trees));
-
-  if (results.length === 1) {
-    results.push(universe);
-  }
 
   const operationResult = operator(...results);
   return operationResult;
@@ -72,7 +68,7 @@ const getPairs = _.chunk(2);
 /**
  * Create multiple interval trees. Can be partially applied for multiple sets of items.
  *
- * @param {String[]} keys - Array of alternating "high" and "low" property names
+ * @param {String[]} keys - Array of alternating "low" and "high" property names
  * @param {Object[]} items - Array of objects with properties listed in keys argument
  * @returns {searchTrees}
  */
