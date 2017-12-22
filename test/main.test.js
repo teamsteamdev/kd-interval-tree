@@ -10,7 +10,6 @@ const items = [
 ]
 
 const keys = ['bottom', 'top', 'left', 'right']
-// const ranges = [0, 2, 0, 2]
 
 it('should create trees', () => {
   const result = createTrees(keys, items)
@@ -29,13 +28,4 @@ it('should search all trees', () => {
   expect(result).toContain(items[0])
   expect(result).toContain(items[2])
   expect(result).toContain(items[3])
-})
-
-it('should search one tree', () => {
-  const searchTrees = createTrees(keys, items)
-  const result = searchTrees(_.without, [0, 1])
-  expect(result).toBeInstanceOf(Array)
-  expect(result.length).toBe(2)
-  expect(result).toContain(items[0])
-  expect(result).toContain(items[1])
 })
