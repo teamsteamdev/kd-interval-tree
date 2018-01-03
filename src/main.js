@@ -15,25 +15,29 @@ const getPairs = _.chunk(2)
  * @returns {searchTrees}
  */
 const createTrees = (keys, items) => {
-  // console.log('createTrees')
-  if (keys.length % 2 !== 0) {
-    throw new Error(
-      `Expected keys.length to be an even number. keys.length: ${keys.length}`
-    )
+  const trees = keys => items => {
+    // console.log('createTrees')
+    if (keys.length % 2 !== 0) {
+      throw new Error(
+        `Expected keys.length to be an even number. keys.length: ${keys.length}`
+      )
+    }
+
+    const pairs = getPairs(keys)
+    const trees = pairs.map((pair, i) => {
+      const tree = new IntervalTree()
+      items.map(addToTree(tree, ...pair)).forEach(logError)
+      return tree
+    })
+
+    const partial = searchTrees(trees, items)
+    partial.count = trees.length
+    partial.trees = trees
+
+    return partial
   }
 
-  const pairs = getPairs(keys)
-  const trees = pairs.map((pair, i) => {
-    const tree = new IntervalTree()
-    items.map(addToTree(tree, ...pair)).forEach(logError)
-    return tree
-  })
-
-  const partial = searchTrees(trees, items)
-  partial.count = trees.length
-  partial.trees = trees
-
-  return partial
+  return items ? trees(keys)(items) : trees(keys)
 }
 
-export default _.curry(createTrees)
+export default createTrees
