@@ -1,11 +1,9 @@
-import _ from 'lodash/fp'
 import IntervalTree from 'node-interval-tree'
 
+import getPairs from './getPairs'
 import addToTree from './addToTree'
 import searchTrees from './search'
 import logError from './errors'
-
-const getPairs = _.chunk(2)
 
 /**
  * Create multiple interval trees. Can be partially applied for multiple sets of items.
@@ -15,7 +13,7 @@ const getPairs = _.chunk(2)
  * @returns {searchTrees}
  */
 const createTrees = (keys, items) => {
-  const trees = keys => items => {
+  const curry = keys => items => {
     // console.log('createTrees')
     if (keys.length % 2 !== 0) {
       throw new Error(
@@ -37,7 +35,7 @@ const createTrees = (keys, items) => {
     return partial
   }
 
-  return items ? trees(keys)(items) : trees(keys)
+  return items ? curry(keys)(items) : curry(keys)
 }
 
 export default createTrees
