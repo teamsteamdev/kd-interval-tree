@@ -26,7 +26,7 @@ var getPairs = (array => array.reduce((reducer, element, index, array) => {
  * @returns {function(item): true|Error} true or an Error if the item was not added to the tree
  */
 const addToTree = (tree, lowKey, highKey) => item => {
-  const [low, high] = [item[lowKey], item[highKey]].sort();
+  const [low, high] = [item[lowKey], item[highKey]].sort((a, b) => a - b);
   const inserted = tree.insert(low, high, item);
   return inserted || new Error(`${item} was not inserted into ${lowKey}, ${highKey} tree.`);
 };
@@ -81,12 +81,7 @@ const logError = x => {
  * @returns {searchTrees}
  */
 const createTrees = (keys, items) => {
-  const curry = keys => items => {
-    // console.log('createTrees')
-    if (keys.length % 2 !== 0) {
-      throw new Error(`Expected keys.length to be an even number. keys.length: ${keys.length}`);
-    }
-
+  const curried = keys => items => {
     const pairs = getPairs(keys);
     const trees = pairs.map((pair, i) => {
       const tree = new IntervalTree();
@@ -101,7 +96,7 @@ const createTrees = (keys, items) => {
     return partial;
   };
 
-  return items ? curry(keys)(items) : curry(keys);
+  return items ? curried(keys)(items) : curried(keys);
 };
 
 module.exports = createTrees;

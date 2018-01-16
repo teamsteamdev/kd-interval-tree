@@ -7,7 +7,7 @@
  * @returns {function(item): true|Error} true or an Error if the item was not added to the tree
  */
 const addToTree = (tree, lowKey, highKey) => item => {
-  const [low, high] = [item[lowKey], item[highKey]].sort()
+  const [low, high] = [item[lowKey], item[highKey]].sort((a, b) => a - b)
   const inserted = tree.insert(low, high, item)
   return (
     inserted ||

@@ -1,6 +1,6 @@
 {
   "name": "kd-interval-tree",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Create and search layered interval trees",
   "license": "MIT",
   "author": {
@@ -31,7 +31,7 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "dev": "rollup -c -w",
+    "start": "rollup -c -w",
     "test": "jest",
     "precommit": "lint-staged",
     "pretest": "standard"

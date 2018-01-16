@@ -13,14 +13,7 @@ import logError from './errors'
  * @returns {searchTrees}
  */
 const createTrees = (keys, items) => {
-  const curry = keys => items => {
-    // console.log('createTrees')
-    if (keys.length % 2 !== 0) {
-      throw new Error(
-        `Expected keys.length to be an even number. keys.length: ${keys.length}`
-      )
-    }
-
+  const curried = keys => items => {
     const pairs = getPairs(keys)
     const trees = pairs.map((pair, i) => {
       const tree = new IntervalTree()
@@ -35,7 +28,7 @@ const createTrees = (keys, items) => {
     return partial
   }
 
-  return items ? curry(keys)(items) : curry(keys)
+  return items ? curried(keys)(items) : curried(keys)
 }
 
 export default createTrees
