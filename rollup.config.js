@@ -29,7 +29,7 @@ export default [
   // CommonJS (for Node) and ES module (for bundlers) build.
   {
     input: 'src/main.js',
-    external: ['node-interval-tree', 'lodash/isError'],
+    external: ['node-interval-tree', 'lodash/isError', 'lodash/fp'],
     output: [
       { file: pkg.main, format: 'cjs' },
       { file: pkg.module, format: 'es' }

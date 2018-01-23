@@ -22,6 +22,7 @@ const search = trees => (interval, i) => {
  * @param {number[]}    ranges   Pairs of numbers correlating to the trees param. Each pair represents an interval to search within.
  * @returns
  */
+
 const searchTrees = trees => (operator, ranges) => {
   const curry = operator => ranges => {
     const pairs = getPairs(ranges)

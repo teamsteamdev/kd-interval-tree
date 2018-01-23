@@ -3,7 +3,7 @@ import IntervalTree from 'node-interval-tree'
 import getPairs from './getPairs'
 import addToTree from './addToTree'
 import searchTrees from './search'
-import logError from './errors'
+import groupFromTrees from './group'
 
 /**
  * Create multiple interval trees. Can be partially applied for multiple sets of items.
@@ -17,13 +17,18 @@ const createTrees = (keys, items) => {
     const pairs = getPairs(keys)
     const trees = pairs.map((pair, i) => {
       const tree = new IntervalTree()
-      items.map(addToTree(tree, ...pair)).forEach(logError)
+      items.map(addToTree(tree, ...pair))
+      tree.keys = pair
+      tree.items = items
       return tree
     })
 
-    const partial = searchTrees(trees, items)
+    const partial = searchTrees(trees)
+
     partial.count = trees.length
     partial.trees = trees
+
+    partial.getGroups = groupFromTrees(trees)
 
     return partial
   }
