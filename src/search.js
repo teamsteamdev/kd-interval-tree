@@ -1,4 +1,5 @@
 import getPairs from './getPairs'
+import createGetGroups from './group'
 
 /**
  * Apply array of IntervalTrees first. Use in Array.map with an array of low-high value pairs which represent intervals.
@@ -23,8 +24,9 @@ const search = trees => (interval, i) => {
  * @returns
  */
 
-const searchTrees = trees => (operator, ranges) => {
-  const curry = operator => ranges => {
+const createSearchTrees = trees => (operator, ranges) => {
+  // Curried function
+  const searchTrees = operator => ranges => {
     const pairs = getPairs(ranges)
     const results = pairs.map(search(trees))
 
@@ -32,7 +34,14 @@ const searchTrees = trees => (operator, ranges) => {
     return operationResult
   }
 
-  return ranges ? curry(operator)(ranges) : curry(operator)
+  searchTrees.count = searchTrees.depth = trees.length
+  searchTrees.trees = trees
+  searchTrees.items = trees[0].items
+  searchTrees.keys = trees.map(({ keys }) => keys)
+
+  searchTrees.getGroups = createGetGroups(searchTrees)
+
+  return ranges ? searchTrees(operator)(ranges) : searchTrees(operator)
 }
 
-export default searchTrees
+export default createSearchTrees

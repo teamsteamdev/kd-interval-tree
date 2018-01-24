@@ -2,8 +2,7 @@ import IntervalTree from 'node-interval-tree'
 
 import getPairs from './getPairs'
 import addToTree from './addToTree'
-import searchTrees from './search'
-import groupFromTrees from './group'
+import createSearchTrees from './search'
 
 /**
  * Create multiple interval trees. Can be partially applied for multiple sets of items.
@@ -23,14 +22,7 @@ const createTrees = (keys, items) => {
       return tree
     })
 
-    const partial = searchTrees(trees)
-
-    partial.count = trees.length
-    partial.trees = trees
-
-    partial.getGroups = groupFromTrees(trees)
-
-    return partial
+    return createSearchTrees(trees)
   }
 
   return items ? curried(keys)(items) : curried(keys)
