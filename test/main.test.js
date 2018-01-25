@@ -4,7 +4,7 @@ import _ from 'lodash/fp'
 import initTree from '../src/main'
 
 it('should initialize correctly', () => {
-  const keys = ['left', 'right', 'bottom', 'top']
+  const keys = [['left', 'right'], ['bottom', 'top']]
 
   const items = [
     { id: 0, bottom: 2, top: 4, left: 2, right: 4, height: 2, width: 2 },
@@ -23,14 +23,14 @@ it('should initialize correctly', () => {
   expect(searchTrees).toBeInstanceOf(Function)
   expect(searchTrees).toHaveProperty('trees')
   expect(searchTrees).toHaveProperty('items', items)
-  expect(searchTrees).toHaveProperty('keys', _.chunk(2, keys))
+  expect(searchTrees).toHaveProperty('keys', keys)
 
   expect(getGroups).toBeDefined()
   expect(getGroups).toBeInstanceOf(Function)
 })
 
 it('should search ranges in trees', () => {
-  const keys = ['left', 'right', 'bottom', 'top']
+  const keys = [['left', 'right'], ['bottom', 'top']]
 
   const items = [
     { id: 0, bottom: 2, top: 4, left: 2, right: 4, height: 2, width: 2 },
@@ -52,7 +52,7 @@ it('should search ranges in trees', () => {
 })
 
 it('should group clusters of items', () => {
-  const keys = ['left', 'right', 'bottom', 'top']
+  const keys = [['left', 'right'], ['bottom', 'top']]
 
   const items1 = [
     { id: 0, bottom: 2, top: 4, left: 2, right: 4, height: 2, width: 2 },

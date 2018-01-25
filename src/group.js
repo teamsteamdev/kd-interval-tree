@@ -1,6 +1,6 @@
 import _ from 'lodash/fp'
 
-import { expandRange, getRange, operateIfAny } from './group.utils.js'
+import { expandRanges, getRange, operateIfAny } from './group.utils.js'
 
 /**
  * Group items using tree keys
@@ -22,7 +22,7 @@ const createGetGroups = searchTrees => () => {
    */
   const getAdjacent = _.compose(
     searchTrees(_.intersection),
-    expandRange(Math.min),
+    expandRanges(Math.min),
     getRange(keys)
   )
 

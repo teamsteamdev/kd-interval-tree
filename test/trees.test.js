@@ -4,7 +4,7 @@ import createTrees from '../src/trees'
 import IntervalTree from 'node-interval-tree'
 
 it('should create an array of trees', () => {
-  const keys = ['left', 'right', 'bottom', 'top']
+  const rangeKeys = [['left', 'right'], ['bottom', 'top']]
 
   const items = [
     { id: 0, bottom: 2, top: 4, left: 2, right: 4, height: 2, width: 2 },
@@ -14,13 +14,13 @@ it('should create an array of trees', () => {
     { id: 8, bottom: 0, top: 1, left: 1, right: 10, height: 1, width: 9 }
   ]
 
-  const result = createTrees(keys, items)
+  const result = createTrees(rangeKeys, items)
 
   expect(result).toBeInstanceOf(Array)
-  expect(result.length).toBe(keys.length / 2)
+  expect(result.length).toBe(rangeKeys.length)
 
   expect(result[0]).toBeInstanceOf(IntervalTree)
-  expect(result[0].keys).toBeInstanceOf(Array)
+  expect(result[0].keys).toBe(rangeKeys[0])
   expect(result[0].items).toBe(items)
   expect(result[0].count).toBe(5)
 })

@@ -35,8 +35,8 @@ const createSearchTrees = trees => {
   })
 
   searchTrees.trees = trees
-  searchTrees.items = trees[0].items
-  searchTrees.keys = trees.map(({ keys }) => keys)
+  searchTrees.items = trees.items
+  searchTrees.keys = trees.keys
 
   return searchTrees
 }
