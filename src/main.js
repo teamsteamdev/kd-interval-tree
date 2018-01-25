@@ -1,8 +1,8 @@
-import IntervalTree from 'node-interval-tree'
+import curry from 'lodash/fp/curry'
 
-import getPairs from './getPairs'
-import addToTree from './addToTree'
 import createSearchTrees from './search'
+import createGetGroups from './group'
+import createTrees from './trees'
 
 /**
  * Create multiple interval trees. Can be partially applied for multiple sets of items.
@@ -11,21 +11,15 @@ import createSearchTrees from './search'
  * @param {Object[]} items - Array of objects with properties listed in keys argument
  * @returns {searchTrees}
  */
-const createTrees = (keys, items) => {
-  const curried = keys => items => {
-    const pairs = getPairs(keys)
-    const trees = pairs.map((pair, i) => {
-      const tree = new IntervalTree()
-      items.map(addToTree(tree, ...pair))
-      tree.keys = pair
-      tree.items = items
-      return tree
-    })
+const initTrees = curry((keys, items) => {
+  const trees = createTrees(keys, items)
+  const searchTrees = createSearchTrees(trees)
+  const getGroups = createGetGroups(searchTrees)
 
-    return createSearchTrees(trees)
+  return {
+    searchTrees,
+    getGroups
   }
+})
 
-  return items ? curried(keys)(items) : curried(keys)
-}
-
-export default createTrees
+export default initTrees

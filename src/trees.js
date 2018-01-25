@@ -1,3 +1,8 @@
+import _ from 'lodash/fp'
+import IntervalTree from 'node-interval-tree'
+
+const getPairs = _.chunk(2)
+
 /**
  * Once the initial params are applied, use in Array.map to populate an interval tree, returning true or an Error if the operation was not successful.
  *
@@ -15,4 +20,17 @@ const addToTree = (tree, lowKey, highKey) => item => {
   )
 }
 
-export default addToTree
+const createTrees = (keys, items) => {
+  const pairs = getPairs(keys)
+  const trees = pairs.map((pair, i) => {
+    const tree = new IntervalTree()
+    items.map(addToTree(tree, ...pair))
+    tree.keys = pair
+    tree.items = items
+    return tree
+  })
+
+  return trees
+}
+
+export default createTrees

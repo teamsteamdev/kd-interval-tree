@@ -15,7 +15,16 @@ export const getRange = keys => item => keys
 export const expandRange = fn => range => range
 
 /**
- * If fn1(a, b) returns an array with length > 0, return result of fn2(a, b), else return a
+ * If fn1(a, b) returns an array with length > 0,
+ * return result of fn2(a, b), else return a
+ *
+ * operateIfAny will be used in a reducer
+ * The reducer will be the first array
+ * Each array in the parent array will be
+ * compared with the reducer but
+ * the reducer will be unified with the array
+ * if fn1 :: result.length > 0
+ *
  * @param {function} fn1 - Set operation function
  * @param {function} fn2 - Set operation function
  * @param {Array} a

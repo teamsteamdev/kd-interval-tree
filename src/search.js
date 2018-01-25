@@ -1,5 +1,6 @@
-import getPairs from './getPairs'
-import createGetGroups from './group'
+import _ from 'lodash/fp'
+
+const getPairs = _.chunk(2)
 
 /**
  * Apply array of IntervalTrees first. Use in Array.map with an array of low-high value pairs which represent intervals.
@@ -24,24 +25,20 @@ const search = trees => (interval, i) => {
  * @returns
  */
 
-const createSearchTrees = trees => (operator, ranges) => {
-  // Curried function
-  const searchTrees = operator => ranges => {
+const createSearchTrees = trees => {
+  const searchTrees = _.curry((operator, ranges) => {
     const pairs = getPairs(ranges)
     const results = pairs.map(search(trees))
-
     const operationResult = operator(...results)
-    return operationResult
-  }
 
-  searchTrees.count = searchTrees.depth = trees.length
+    return operationResult
+  })
+
   searchTrees.trees = trees
   searchTrees.items = trees[0].items
   searchTrees.keys = trees.map(({ keys }) => keys)
 
-  searchTrees.getGroups = createGetGroups(searchTrees)
-
-  return ranges ? searchTrees(operator)(ranges) : searchTrees(operator)
+  return searchTrees
 }
 
 export default createSearchTrees
