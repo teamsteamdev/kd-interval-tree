@@ -1,10 +1,24 @@
+import at from 'lodash/fp/at'
+import chunk from 'lodash/fp/chunk'
+import compose from 'lodash/fp/compose'
+import curry from 'lodash/fp/curry'
+import flatten from 'lodash/fp/flatten'
+import map from 'lodash/fp/map'
+
 /**
  * Get range array representing object dimensions
- * @param {string[][]} keys - Array with key name pairs
+ * @param {string[][]} rangeKeys - Array with arrays of key name pairs
  * @param {object} item - Object with properties named in keys array
  * @returns {number[][]} - Array of Number[min, max] representing ranges
  */
-export const getRange = keys => item => keys
+export const getRange = curry((rangeKeys, item) => {
+  const flatKeys = flatten(rangeKeys)
+  const getMinMax = a => [Math.min(...a), Math.max(...a)]
+
+  const getRange = compose(map(getMinMax), chunk(2), at(flatKeys))
+
+  return getRange(item)
+})
 
 /**
  * Expand ranges in array by a single amount
@@ -12,7 +26,13 @@ export const getRange = keys => item => keys
  * @param {number[][]} ranges - Array of Number[min, max] representing ranges
  * @returns {number[][]} - Ranges expanded by value from fn
  */
-export const expandRange = fn => range => range
+export const expandRanges = fn => ranges => {
+  const diff = ([a, b]) => Math.abs(a - b)
+  const amount = fn(...ranges.map(diff))
+  const expand = ([min, max]) => [min - amount, max + amount]
+
+  return ranges.map(expand)
+}
 
 /**
  * If fn1(a, b) returns an array with length > 0,
@@ -31,4 +51,10 @@ export const expandRange = fn => range => range
  * @param {Array} b
  * @returns {Array} - Result of operator2(a, b) or a
  */
-export const operateIfAny = fn1 => fn2 => (a, b) => a
+export const operateIfAny = fn1 => fn2 => (a, b) => {
+  if (fn1(a, b).length > 0) {
+    return fn2(a, b)
+  } else {
+    return a
+  }
+}
