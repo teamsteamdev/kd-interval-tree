@@ -116,7 +116,7 @@ const expandRanges = curry((fn, ranges) => {
  * If fn1(a, b) returns an array with length > 0,
  * return result of fn2(a, b), else return a
  *
- * operateIfAny will be used in a reducer
+ * callIfLength will be used in a reducer
  * The reducer will be the first array
  * Each array in the parent array will be
  * compared with the reducer but
@@ -129,7 +129,7 @@ const expandRanges = curry((fn, ranges) => {
  * @param {Array} b
  * @returns {Array} - Result of operator2(a, b) or a
  */
-const operateIfAny = fn1 => fn2 => (a, b) => {
+const callIfLength = fn1 => fn2 => (a, b) => {
   if (fn1(a, b).length > 0) {
     return fn2(a, b);
   } else {
@@ -164,10 +164,10 @@ const getAdjacent = curry((searchTrees, item) => {
  * @function getClusters
  * @param {object[][]} - Array of item sets
  * @todo write tests for helper function
- *   - operateIfAny(operation, comparison op, array, array)
+ *   - callIfLength(operation, comparison op, array, array)
  * @todo write test for getClusters
  */
-const getClusters = _.compose(_.uniq, operateIfAny(_.intersection, _.union), _.uniq);
+const getClusters = _.compose(_.uniq, callIfLength(_.intersection, _.union), _.uniq);
 
 /**
  * Group items using tree keys

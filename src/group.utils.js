@@ -2,8 +2,10 @@ import at from 'lodash/fp/at'
 import chunk from 'lodash/fp/chunk'
 import compose from 'lodash/fp/compose'
 import curry from 'lodash/fp/curry'
+import difference from 'lodash/fp/difference'
 import flatten from 'lodash/fp/flatten'
 import map from 'lodash/fp/map'
+import uniqWith from 'lodash/fp/uniqWith'
 
 /**
  * Get range array representing object dimensions
@@ -38,7 +40,7 @@ export const expandRanges = curry((fn, ranges) => {
  * If fn1(a, b) returns an array with length > 0,
  * return result of fn2(a, b), else return a
  *
- * operateIfAny will be used in a reducer
+ * callIfLength will be used in a reducer
  * The reducer will be the first array
  * Each array in the parent array will be
  * compared with the reducer but
@@ -51,10 +53,31 @@ export const expandRanges = curry((fn, ranges) => {
  * @param {Array} b
  * @returns {Array} - Result of operator2(a, b) or a
  */
-export const operateIfAny = fn1 => fn2 => (a, b) => {
+export const callIfLength = fn1 => fn2 => (a, b) => {
   if (fn1(a, b).length > 0) {
     return fn2(a, b)
   } else {
     return a
   }
+}
+
+/**
+ * Returns true if arrays have same elements
+ * @param {array} x
+ * @param {array} y
+ */
+export const hasSameItems = (x, y) => {
+  const arrayDiff = difference(x, y)
+  const isDifferent = arrayDiff.length > 0
+  return !isDifferent
+}
+
+/**
+ * array of arrays, multiple equivalent sets ->
+ * remove equivalent array, regardless of order ->
+ * array of arrays, one of each set
+ * @param {Array[]} sets - An array of arrays
+ */
+export const uniqueSets = sets => {
+  return uniqWith(hasSameItems, sets)
 }

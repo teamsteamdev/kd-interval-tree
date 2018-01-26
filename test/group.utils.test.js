@@ -1,6 +1,12 @@
 /* eslint-env jest */
 import _ from 'lodash/fp'
-import { getRanges, expandRanges, operateIfAny } from '../src/group.utils'
+import {
+  getRanges,
+  expandRanges,
+  callIfLength,
+  hasSameItems,
+  uniqueSets
+} from '../src/group.utils'
 
 it('should get range values from item', () => {
   const partial = getRanges([['left', 'right'], ['bottom', 'top']])
@@ -22,7 +28,7 @@ it('should expand ranges by smallest range size', () => {
 })
 
 it('should return the union of items1 and items2', () => {
-  const partial1 = operateIfAny(_.intersection)
+  const partial1 = callIfLength(_.intersection)
   expect(partial1).toBeInstanceOf(Function)
 
   const partial2 = partial1(_.union)
@@ -36,7 +42,7 @@ it('should return the union of items1 and items2', () => {
 })
 
 it('should return items1', () => {
-  const partial1 = operateIfAny(_.intersection)
+  const partial1 = callIfLength(_.intersection)
   expect(partial1).toBeInstanceOf(Function)
 
   const partial2 = partial1(_.union)
@@ -48,4 +54,32 @@ it('should return items1', () => {
   expect(result).not.toContain(3)
   expect(result).not.toContain(4)
   expect(result.length).toBe(2)
+})
+
+describe('hasSameItems', () => {
+  it('should return true if arrays have same elements', () => {
+    const set1 = [1, 2, 3]
+    const set2 = [3, 2, 1]
+    expect(hasSameItems(set1, set2)).toBeTruthy()
+  })
+
+  it('should return false if arrays have different elements', () => {
+    const set1 = [1, 2, 4]
+    const set2 = [3, 2, 1]
+    expect(hasSameItems(set1, set2)).toBeFalsy()
+  })
+})
+
+describe('uniqueSets', () => {
+  it('should remove duplicate set arrays', () => {
+    const set1 = [1, 2, 3]
+    const set2 = [3, 2, 1]
+    const set3 = [4, 5, 6]
+    const result = uniqueSets([set1, set2, set3])
+
+    expect(result).toBeInstanceOf(Array)
+    expect(result.length).toBe(2)
+    expect(result).toContain(set1)
+    expect(result).toContain(set3)
+  })
 })

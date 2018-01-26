@@ -6680,7 +6680,7 @@ var Node = /** @class */ (function () {
     };
     /*
     Left-Left case:
-  
+
            z                                      y
           / \                                   /   \
          y   T4      Right Rotate (z)          x     z
@@ -6688,9 +6688,9 @@ var Node = /** @class */ (function () {
        x   T3                                T1 T2 T3 T4
       / \
     T1   T2
-  
+
     Left-Right case:
-  
+
          z                               z                           x
         / \                             / \                        /   \
        y   T4  Left Rotate (y)         x  T4  Right Rotate(z)     y     z
@@ -6736,7 +6736,7 @@ var Node = /** @class */ (function () {
     };
     /*
     Right-Right case:
-  
+
       z                               y
      / \                            /   \
     T1  y     Left Rotate(z)       z     x
@@ -6744,9 +6744,9 @@ var Node = /** @class */ (function () {
       T2  x                      T1 T2 T3 T4
          / \
         T3 T4
-  
+
     Right-Left case:
-  
+
        z                            z                            x
       / \                          / \                         /   \
      T1  y   Right Rotate (y)     T1  x      Left Rotate(z)   z     y
@@ -7878,7 +7878,7 @@ const expandRanges = curry((fn, ranges) => {
  * If fn1(a, b) returns an array with length > 0,
  * return result of fn2(a, b), else return a
  *
- * operateIfAny will be used in a reducer
+ * callIfLength will be used in a reducer
  * The reducer will be the first array
  * Each array in the parent array will be
  * compared with the reducer but
@@ -7891,7 +7891,7 @@ const expandRanges = curry((fn, ranges) => {
  * @param {Array} b
  * @returns {Array} - Result of operator2(a, b) or a
  */
-const operateIfAny = fn1 => fn2 => (a, b) => {
+const callIfLength = fn1 => fn2 => (a, b) => {
   if (fn1(a, b).length > 0) {
     return fn2(a, b);
   } else {
@@ -7926,10 +7926,10 @@ const getAdjacent = curry((searchTrees, item) => {
  * @function getClusters
  * @param {object[][]} - Array of item sets
  * @todo write tests for helper function
- *   - operateIfAny(operation, comparison op, array, array)
+ *   - callIfLength(operation, comparison op, array, array)
  * @todo write test for getClusters
  */
-const getClusters = fp.compose(fp.uniq, operateIfAny(fp.intersection, fp.union), fp.uniq);
+const getClusters = fp.compose(fp.uniq, callIfLength(fp.intersection, fp.union), fp.uniq);
 
 /**
  * Group items using tree keys

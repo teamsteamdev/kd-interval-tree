@@ -2,7 +2,12 @@ import _ from 'lodash/fp'
 import compose from 'lodash/fp/compose'
 import curry from 'lodash/fp/curry'
 
-import { expandRanges, getRanges, operateIfAny } from './group.utils'
+import {
+  expandRanges,
+  getRanges,
+  callIfLength,
+  uniqueSets
+} from './group.utils'
 
 /**
  * Item -> getRange(keys)(Item) -> Item ranges ->
@@ -35,13 +40,14 @@ export const getAdjacent = curry((searchTrees, item) => {
  * @function getClusters
  * @param {object[][]} - Array of item sets
  * @todo write tests for helper function
- *   - operateIfAny(operation, comparison op, array, array)
+ *   - callIfLength(operation, comparison op, array, array)
  * @todo write test for getClusters
  */
 export const getClusters = _.compose(
-  _.uniq,
-  operateIfAny(_.intersection, _.union),
-  _.uniq
+  // refactor
+  uniqueSets,
+  callIfLength(_.intersection, _.union),
+  uniqueSets
 )
 
 /**
