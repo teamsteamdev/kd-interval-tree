@@ -1,9 +1,9 @@
 /* eslint-env jest */
 import _ from 'lodash/fp'
-import { getRange, expandRanges, operateIfAny } from '../src/group.utils'
+import { getRanges, expandRanges, operateIfAny } from '../src/group.utils'
 
 it('should get range values from item', () => {
-  const partial = getRange([['left', 'right'], ['bottom', 'top']])
+  const partial = getRanges([['left', 'right'], ['bottom', 'top']])
   expect(partial).toBeInstanceOf(Function)
 
   const result = partial({ left: 7, right: 10, bottom: 8, top: 9 })

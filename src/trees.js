@@ -1,4 +1,4 @@
-import _ from 'lodash/fp'
+import curry from 'lodash/fp/curry'
 import IntervalTree from 'node-interval-tree'
 
 /**
@@ -9,19 +9,22 @@ import IntervalTree from 'node-interval-tree'
  * @param {string} highKey - High interval key name
  * @returns {function(item): true|Error} true or an Error if the item was not added to the tree
  */
-const addToTree = _.curry((tree, lowKey, highKey, item) => {
-  const [low, high] = [item[lowKey], item[highKey]].sort((a, b) => a - b)
+const addToTree = curry((tree, [lowKey, highKey], item) => {
+  const values = [item[lowKey], item[highKey]]
+  const [low, high] = [Math.min(...values), Math.max(...values)]
   const inserted = tree.insert(low, high, item)
-  return (
-    inserted ||
-    new Error(`${item} was not inserted into ${lowKey}, ${highKey} tree.`)
-  )
+
+  if (!inserted) {
+    throw new Error(`${item} was not inserted into ${lowKey}, ${highKey} tree.`)
+  }
 })
 
 const createTrees = (rangeKeys, items) => {
-  const trees = rangeKeys.map((keys, i) => {
+  const trees = rangeKeys.map(keys => {
     const tree = new IntervalTree()
-    items.map(addToTree(tree, ...keys))
+    const add = addToTree(tree, keys)
+
+    items.forEach(add)
     tree.keys = keys
     tree.items = items
     return tree

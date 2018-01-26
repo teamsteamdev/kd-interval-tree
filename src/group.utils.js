@@ -11,7 +11,7 @@ import map from 'lodash/fp/map'
  * @param {object} item - Object with properties named in keys array
  * @returns {number[][]} - Array of Number[min, max] representing ranges
  */
-export const getRange = curry((rangeKeys, item) => {
+export const getRanges = curry((rangeKeys, item) => {
   const flatKeys = flatten(rangeKeys)
   const getMinMax = a => [Math.min(...a), Math.max(...a)]
 
@@ -26,13 +26,13 @@ export const getRange = curry((rangeKeys, item) => {
  * @param {number[][]} ranges - Array of Number[min, max] representing ranges
  * @returns {number[][]} - Ranges expanded by value from fn
  */
-export const expandRanges = fn => ranges => {
+export const expandRanges = curry((fn, ranges) => {
   const diff = ([a, b]) => Math.abs(a - b)
   const amount = fn(...ranges.map(diff))
   const expand = ([min, max]) => [min - amount, max + amount]
 
   return ranges.map(expand)
-}
+})
 
 /**
  * If fn1(a, b) returns an array with length > 0,

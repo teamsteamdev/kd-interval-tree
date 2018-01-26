@@ -2,20 +2,14 @@
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var IntervalTree = _interopDefault(require('node-interval-tree'));
+var curry = _interopDefault(require('lodash/fp/curry'));
 var _ = _interopDefault(require('lodash/fp'));
-
-var getPairs = (array => array.reduce((reducer, element, index, array) => {
-  const isEven = index % 2 === 0;
-
-  if (isEven) {
-    const next = array[index + 1];
-    const pair = next ? [element, next] : [element];
-    return [...reducer, pair];
-  }
-
-  return reducer;
-}, []));
+var IntervalTree = _interopDefault(require('node-interval-tree'));
+var compose = _interopDefault(require('lodash/fp/compose'));
+var at = _interopDefault(require('lodash/fp/at'));
+var chunk = _interopDefault(require('lodash/fp/chunk'));
+var flatten = _interopDefault(require('lodash/fp/flatten'));
+var map = _interopDefault(require('lodash/fp/map'));
 
 /**
  * Once the initial params are applied, use in Array.map to populate an interval tree, returning true or an Error if the operation was not successful.
@@ -25,10 +19,31 @@ var getPairs = (array => array.reduce((reducer, element, index, array) => {
  * @param {string} highKey - High interval key name
  * @returns {function(item): true|Error} true or an Error if the item was not added to the tree
  */
-const addToTree = (tree, lowKey, highKey) => item => {
-  const [low, high] = [item[lowKey], item[highKey]].sort((a, b) => a - b);
+const addToTree = curry((tree, [lowKey, highKey], item) => {
+  const values = [item[lowKey], item[highKey]];
+  const [low, high] = [Math.min(...values), Math.max(...values)];
   const inserted = tree.insert(low, high, item);
-  return inserted || new Error(`${item} was not inserted into ${lowKey}, ${highKey} tree.`);
+
+  if (!inserted) {
+    throw new Error(`${item} was not inserted into ${lowKey}, ${highKey} tree.`);
+  }
+});
+
+const createTrees = (rangeKeys, items) => {
+  const trees = rangeKeys.map(keys => {
+    const tree = new IntervalTree();
+    const add = addToTree(tree, keys);
+
+    items.forEach(add);
+    tree.keys = keys;
+    tree.items = items;
+    return tree;
+  });
+
+  trees.keys = rangeKeys;
+  trees.items = items;
+
+  return trees;
 };
 
 /**
@@ -37,9 +52,8 @@ const addToTree = (tree, lowKey, highKey) => item => {
  * @param {IntervalTree[]} trees - an array of Interval Trees corresponding to the array of intervals
  * @returns {function(Number[], number): array}
  */
-const search = trees => (interval, i) => {
-  // console.log('search')
-  const [low, high] = interval.sort();
+const search = trees => (range, i) => {
+  const [low, high] = [Math.min(...range), Math.max(...range)];
   const result = trees[i].search(low, high);
   return result;
 };
@@ -54,131 +68,137 @@ const search = trees => (interval, i) => {
  * @returns
  */
 
-const searchTrees = trees => (operator, ranges) => {
-  const curry = operator => ranges => {
-    const pairs = getPairs(ranges);
-    const results = pairs.map(search(trees));
-
+const createSearchTrees = trees => {
+  const searchTrees = _.curry((operator, ranges) => {
+    const results = ranges.map(search(trees));
     const operationResult = operator(...results);
+
     return operationResult;
-  };
-
-  return ranges ? curry(operator)(ranges) : curry(operator);
-};
-
-/**
- * Get padding amount
- * @param {string[]} keys - Property names used to calculate padding
- * @param {Object} item - Item
- * @returns {number}
- */
-const getPadByKeys = keys => item => Math.min(...keys.map(k => item[k]));
-
-/**
- * Widen search range: setPad => padRange => paddedRange
- * @param {number} pad - Amount to widen range
- * @param {number[]} range - Minimum and maximun range values
- * @returns {number[]}
- */
-const setPad = pad => ([min, max]) => [Math.max(min - pad, 0), max + pad];
-
-/**
- * Get range array from Item object
- * @param {string[]} keys - Property names containing range values
- * @param {Object} item - Item
- * @returns {number[]} - Range: [min, max]
- */
-const setRangeByKeys = keys => item => keys.map(key => item[key]).sort((a, b) => a - b);
-
-/**
- *
- * @param {string[]} paddingKeys - Property names used to calculate padding
- * @param {IntervalTree} tree - Interval Tree to search
- * @returns {Array[]} - Contains arrays of overlapping items
- */
-const toGroups = paddingKeys => tree => {
-  const { items, keys } = tree;
-  console.log('keys', keys);
-
-  const getRange = setRangeByKeys(keys);
-  const getPad = getPadByKeys(paddingKeys);
-
-  const padRanges = items.map(getPad).map(setPad);
-  const itemRanges = items.map(getRange);
-
-  const paddedRanges = itemRanges.map((r, i) => padRanges[i](r));
-
-  // Find adjacent items
-  const results = paddedRanges.map(range => tree.search(...range).map(i => i.id).sort());
-
-  return results;
-};
-
-/**
- * Group items recursively
- * @param {IntervalTree[]} trees - Array of IntervalTrees
- * @param {Number|Function} fn - Number or Function that returns a number
- * @returns {Function} - A function that takes one function as a param.
- *    This function returns a value to use to expand the search range.
- */
-const groupFromTrees = seedTrees => paddingKeys => {
-  // Clone or create consumable trees from seedTrees
-  const trees = _.cloneDeep(seedTrees);
-
-  // Get clusters from each tree
-  const resultsByTree = trees.map(toGroups(paddingKeys));
-  // Get intersection of each tree result
-  const resultsByItem = _.zip(...resultsByTree);
-  console.log('resultsByItem', resultsByItem);
-  const intersections = resultsByItem.map(([x, y]) => _.intersection(x, y));
-  console.log('intersections', intersections);
-
-  const groups = intersections.map(group => {
-    const intersects = _.intersection(group);
-    const groupSet = intersections.reduce((set, g) => {
-      if (intersects(g)) {
-        set.add(...g);
-      }
-
-      return set;
-    }, new Set(group));
-
-    return [...groupSet].sort();
   });
 
-  console.log('groups', groups);
+  searchTrees.trees = trees;
+  searchTrees.items = trees.items;
+  searchTrees.keys = trees.keys;
+
+  return searchTrees;
+};
+
+/**
+ * Get range array representing object dimensions
+ * @param {string[][]} rangeKeys - Array with arrays of key name pairs
+ * @param {object} item - Object with properties named in keys array
+ * @returns {number[][]} - Array of Number[min, max] representing ranges
+ */
+const getRanges = curry((rangeKeys, item) => {
+  const flatKeys = flatten(rangeKeys);
+  const getMinMax = a => [Math.min(...a), Math.max(...a)];
+
+  const getRange = compose(map(getMinMax), chunk(2), at(flatKeys));
+
+  return getRange(item);
+});
+
+/**
+ * Expand ranges in array by a single amount
+ * @param {function} fn - Comparator function to choose amount for expansion
+ * @param {number[][]} ranges - Array of Number[min, max] representing ranges
+ * @returns {number[][]} - Ranges expanded by value from fn
+ */
+const expandRanges = curry((fn, ranges) => {
+  const diff = ([a, b]) => Math.abs(a - b);
+  const amount = fn(...ranges.map(diff));
+  const expand = ([min, max]) => [min - amount, max + amount];
+
+  return ranges.map(expand);
+});
+
+/**
+ * If fn1(a, b) returns an array with length > 0,
+ * return result of fn2(a, b), else return a
+ *
+ * operateIfAny will be used in a reducer
+ * The reducer will be the first array
+ * Each array in the parent array will be
+ * compared with the reducer but
+ * the reducer will be unified with the array
+ * if fn1 :: result.length > 0
+ *
+ * @param {function} fn1 - Set operation function
+ * @param {function} fn2 - Set operation function
+ * @param {Array} a
+ * @param {Array} b
+ * @returns {Array} - Result of operator2(a, b) or a
+ */
+const operateIfAny = fn1 => fn2 => (a, b) => {
+  if (fn1(a, b).length > 0) {
+    return fn2(a, b);
+  } else {
+    return a;
+  }
+};
+
+/**
+ * Item -> getRange(keys)(Item) -> Item ranges ->
+ * expandRange -> Ranges increased by func result ->
+ * searchTrees(intersection) -> All Items in expanded range
+ * @function getAdjacent
+ * @todo write tests for helper functions
+ *   - expandRange
+ *   - getRange
+ * @todo write test for getAdjacent
+ */
+const getAdjacent = curry((searchTrees, item) => {
+  const { keys } = searchTrees;
+
+  const composed = compose(searchTrees(_.intersection), expandRanges(Math.min), getRanges(keys));
+
+  return composed(item);
+});
+
+/**
+ * adjacentByItem -> remove duplicate sets -->
+ * reduce: if two sets intersect,
+ *         return union of sets,
+ *         else return first set ->
+ * remove duplicate sets -> return groups
+ * @function getClusters
+ * @param {object[][]} - Array of item sets
+ * @todo write tests for helper function
+ *   - operateIfAny(operation, comparison op, array, array)
+ * @todo write test for getClusters
+ */
+const getClusters = _.compose(_.uniq, operateIfAny(_.intersection, _.union), _.uniq);
+
+/**
+ * Group items using tree keys
+ * @param {function} searchTrees
+ * @returns {function} - Function that returns groups
+ */
+const getGroups = searchTrees => {
+  const { items } = searchTrees;
+
+  const adjacentByItem = items.map(getAdjacent(searchTrees));
+  const groups = getClusters(adjacentByItem);
+
   return groups;
 };
 
 /**
  * Create multiple interval trees. Can be partially applied for multiple sets of items.
  *
- * @param {String[]} keys - Array of alternating "low" and "high" property names
+ * @param {String[]} keys - Array of ["low", "high"] property name pairs
  * @param {Object[]} items - Array of objects with properties listed in keys argument
  * @returns {searchTrees}
  */
-const createTrees = (keys, items) => {
-  const curried = keys => items => {
-    const pairs = getPairs(keys);
-    const trees = pairs.map((pair, i) => {
-      const tree = new IntervalTree();
-      items.map(addToTree(tree, ...pair));
-      tree.keys = pair;
-      tree.items = items;
-      return tree;
-    });
+const kdIntervalTree = curry((keys, items) => {
+  const trees = createTrees(keys, items);
+  const searchTrees = createSearchTrees(trees);
+  const groups = getGroups(searchTrees);
 
-    const partial = searchTrees(trees);
-
-    partial.count = trees.length;
-    partial.trees = trees;
-
-    partial.getGroups = groupFromTrees(trees);
-
-    return partial;
+  return {
+    searchTrees,
+    groups
   };
+});
 
-  return items ? curried(keys)(items) : curried(keys);
-};
-
-module.exports = createTrees;
+module.exports = kdIntervalTree;

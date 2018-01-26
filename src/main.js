@@ -1,25 +1,25 @@
 import curry from 'lodash/fp/curry'
 
-import createSearchTrees from './search'
-import createGetGroups from './group'
 import createTrees from './trees'
+import createSearchTrees from './search'
+import { getGroups } from './group'
 
 /**
  * Create multiple interval trees. Can be partially applied for multiple sets of items.
  *
- * @param {String[]} keys - Array of alternating "low" and "high" property names
+ * @param {String[]} keys - Array of ["low", "high"] property name pairs
  * @param {Object[]} items - Array of objects with properties listed in keys argument
  * @returns {searchTrees}
  */
-const initTrees = curry((keys, items) => {
+const kdIntervalTree = curry((keys, items) => {
   const trees = createTrees(keys, items)
   const searchTrees = createSearchTrees(trees)
-  const getGroups = createGetGroups(searchTrees)
+  const groups = getGroups(searchTrees)
 
   return {
     searchTrees,
-    getGroups
+    groups
   }
 })
 
-export default initTrees
+export default kdIntervalTree

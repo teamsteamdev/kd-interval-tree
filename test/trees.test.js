@@ -20,6 +20,8 @@ it('should create an array of trees', () => {
   expect(result.length).toBe(rangeKeys.length)
 
   expect(result[0]).toBeInstanceOf(IntervalTree)
+  expect(result[0].search(2, 4)).toContain(items[0])
+
   expect(result[0].keys).toBe(rangeKeys[0])
   expect(result[0].items).toBe(items)
   expect(result[0].count).toBe(5)

@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import _ from 'lodash/fp'
 
-import initTree from '../src/main'
+import kdIntervalTree from '../src/main'
 
 it('should initialize correctly', () => {
   const keys = [['left', 'right'], ['bottom', 'top']]
@@ -14,10 +14,10 @@ it('should initialize correctly', () => {
     { id: 8, bottom: 0, top: 1, left: 1, right: 10, height: 1, width: 9 }
   ]
 
-  const partial = initTree(keys)
+  const partial = kdIntervalTree(keys)
   expect(partial).toBeInstanceOf(Function)
 
-  const { searchTrees, getGroups } = partial(items)
+  const { searchTrees, groups } = partial(items)
 
   expect(searchTrees).toBeDefined()
   expect(searchTrees).toBeInstanceOf(Function)
@@ -25,8 +25,8 @@ it('should initialize correctly', () => {
   expect(searchTrees).toHaveProperty('items', items)
   expect(searchTrees).toHaveProperty('keys', keys)
 
-  expect(getGroups).toBeDefined()
-  expect(getGroups).toBeInstanceOf(Function)
+  expect(groups).toBeDefined()
+  expect(groups).toBeInstanceOf(Array)
 })
 
 it('should search ranges in trees', () => {
@@ -39,8 +39,8 @@ it('should search ranges in trees', () => {
     { id: 3, bottom: 5, top: 6, left: 5, right: 6, height: 1, width: 1 }
   ]
 
-  const { searchTrees } = initTree(keys, items)
-  const result = searchTrees(_.intersection, [0, 2, 0, 2])
+  const { searchTrees } = kdIntervalTree(keys, items)
+  const result = searchTrees(_.intersection, [[0, 2], [0, 2]])
 
   expect(result).toBeInstanceOf(Array)
   expect(result.length).toBe(3)
@@ -54,7 +54,7 @@ it('should search ranges in trees', () => {
 it('should group clusters of items', () => {
   const keys = [['left', 'right'], ['bottom', 'top']]
 
-  const items1 = [
+  const group1 = [
     { id: 0, bottom: 2, top: 4, left: 2, right: 4, height: 2, width: 2 },
     { id: 1, bottom: 5, top: 6, left: 5, right: 6, height: 1, width: 1 },
     { id: 2, bottom: 1, top: 2, left: 1, right: 2, height: 1, width: 1 },
@@ -62,16 +62,16 @@ it('should group clusters of items', () => {
     { id: 8, bottom: 0, top: 1, left: 1, right: 10, height: 1, width: 9 }
   ]
 
-  const items2 = [
+  const group2 = [
     { id: 4, bottom: 8, top: 9, left: 8, right: 9, height: 1, width: 1 },
     { id: 5, bottom: 8, top: 9, left: 9, right: 10, height: 1, width: 1 },
     { id: 6, bottom: 9, top: 10, left: 8, right: 9, height: 1, width: 1 },
     { id: 7, bottom: 9, top: 10, left: 9, right: 10, height: 1, width: 1 }
   ]
 
-  const { getGroups } = initTree(keys, [...items1, ...items2])
-  const result = getGroups()
+  const { groups: result } = kdIntervalTree(keys, [...group1, ...group2])
 
   expect(result).toBeInstanceOf(Array)
-  expect(result).toEqual([items1, items2])
+  expect(result.length).toBe(2)
+  expect(result[0].length).toBe()
 })

@@ -1,6 +1,4 @@
-import _ from 'lodash/fp'
-
-const getPairs = _.chunk(2)
+import curry from 'lodash/fp/curry'
 
 /**
  * Apply array of IntervalTrees first. Use in Array.map with an array of low-high value pairs which represent intervals.
@@ -8,9 +6,8 @@ const getPairs = _.chunk(2)
  * @param {IntervalTree[]} trees - an array of Interval Trees corresponding to the array of intervals
  * @returns {function(Number[], number): array}
  */
-const search = trees => (interval, i) => {
-  // console.log('search')
-  const [low, high] = interval.sort()
+const search = trees => (range, i) => {
+  const [low, high] = [Math.min(...range), Math.max(...range)]
   const result = trees[i].search(low, high)
   return result
 }
@@ -26,9 +23,8 @@ const search = trees => (interval, i) => {
  */
 
 const createSearchTrees = trees => {
-  const searchTrees = _.curry((operator, ranges) => {
-    const pairs = getPairs(ranges)
-    const results = pairs.map(search(trees))
+  const searchTrees = curry((operator, ranges) => {
+    const results = ranges.map(search(trees))
     const operationResult = operator(...results)
 
     return operationResult
