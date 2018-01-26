@@ -53,13 +53,13 @@ export const expandRanges = curry((fn, ranges) => {
  * @param {Array} b
  * @returns {Array} - Result of operator2(a, b) or a
  */
-export const callIfLength = fn1 => fn2 => (a, b) => {
+export const callIfLength = curry((fn1, fn2, a, b) => {
   if (fn1(a, b).length > 0) {
     return fn2(a, b)
   } else {
     return a
   }
-}
+})
 
 /**
  * Returns true if arrays have same elements

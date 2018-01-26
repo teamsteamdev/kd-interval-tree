@@ -43,12 +43,17 @@ export const getAdjacent = curry((searchTrees, item) => {
  *   - callIfLength(operation, comparison op, array, array)
  * @todo write test for getClusters
  */
-export const getClusters = _.compose(
-  // refactor
-  uniqueSets,
-  callIfLength(_.intersection, _.union),
-  uniqueSets
-)
+export const getClusters = sets => {
+  const uniteIfIntersect = callIfLength(_.intersection, _.union)
+
+  const uniqueAdjacents = uniqueSets(sets)
+  const clusters = uniqueAdjacents.map(set =>
+    sets.reduce(uniteIfIntersect, set)
+  )
+  const uniqueGroups = uniqueSets(clusters)
+
+  return uniqueGroups
+}
 
 /**
  * Group items using tree keys

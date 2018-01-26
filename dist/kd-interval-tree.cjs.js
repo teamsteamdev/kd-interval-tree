@@ -3,13 +3,15 @@
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var curry = _interopDefault(require('lodash/fp/curry'));
-var _ = _interopDefault(require('lodash/fp'));
 var IntervalTree = _interopDefault(require('node-interval-tree'));
+var _ = _interopDefault(require('lodash/fp'));
 var compose = _interopDefault(require('lodash/fp/compose'));
 var at = _interopDefault(require('lodash/fp/at'));
 var chunk = _interopDefault(require('lodash/fp/chunk'));
+var difference = _interopDefault(require('lodash/fp/difference'));
 var flatten = _interopDefault(require('lodash/fp/flatten'));
 var map = _interopDefault(require('lodash/fp/map'));
+var uniqWith = _interopDefault(require('lodash/fp/uniqWith'));
 
 /**
  * Once the initial params are applied, use in Array.map to populate an interval tree, returning true or an Error if the operation was not successful.
@@ -69,7 +71,7 @@ const search = trees => (range, i) => {
  */
 
 const createSearchTrees = trees => {
-  const searchTrees = _.curry((operator, ranges) => {
+  const searchTrees = curry((operator, ranges) => {
     const results = ranges.map(search(trees));
     const operationResult = operator(...results);
 
@@ -129,12 +131,38 @@ const expandRanges = curry((fn, ranges) => {
  * @param {Array} b
  * @returns {Array} - Result of operator2(a, b) or a
  */
-const callIfLength = fn1 => fn2 => (a, b) => {
+const callIfLength = curry((fn1, fn2, a, b) => {
   if (fn1(a, b).length > 0) {
     return fn2(a, b);
   } else {
     return a;
   }
+});
+
+/**
+ * Returns true if arrays have same elements
+ * @param {array} x
+ * @param {array} y
+ */
+const hasSameItems = (x, y) => {
+  const arrayDiff = difference(x, y);
+  const isDifferent = arrayDiff.length > 0;
+  return !isDifferent;
+};
+
+/**
+ * array of arrays, multiple equivalent sets ->
+ * remove equivalent array, regardless of order ->
+ * array of arrays, one of each set
+ * @param {Array[]} sets - An array of arrays
+ */
+const uniqueSets = sets => {
+  return uniqWith(hasSameItems, sets);
+};
+
+const trace = label => x => {
+  console.log(label, x);
+  return x;
 };
 
 /**
@@ -167,7 +195,9 @@ const getAdjacent = curry((searchTrees, item) => {
  *   - callIfLength(operation, comparison op, array, array)
  * @todo write test for getClusters
  */
-const getClusters = _.compose(_.uniq, callIfLength(_.intersection, _.union), _.uniq);
+const getClusters = _.compose(
+// refactor
+uniqueSets, trace('after callIfLength:'), callIfLength(_.intersection, _.union), trace('before callIfLength:'), uniqueSets);
 
 /**
  * Group items using tree keys

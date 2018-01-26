@@ -1,11 +1,13 @@
 import curry from 'lodash/fp/curry';
-import _ from 'lodash/fp';
 import IntervalTree from 'node-interval-tree';
+import _ from 'lodash/fp';
 import compose from 'lodash/fp/compose';
 import at from 'lodash/fp/at';
 import chunk from 'lodash/fp/chunk';
+import difference from 'lodash/fp/difference';
 import flatten from 'lodash/fp/flatten';
 import map from 'lodash/fp/map';
+import uniqWith from 'lodash/fp/uniqWith';
 
 /**
  * Once the initial params are applied, use in Array.map to populate an interval tree, returning true or an Error if the operation was not successful.
@@ -65,7 +67,7 @@ const search = trees => (range, i) => {
  */
 
 const createSearchTrees = trees => {
-  const searchTrees = _.curry((operator, ranges) => {
+  const searchTrees = curry((operator, ranges) => {
     const results = ranges.map(search(trees));
     const operationResult = operator(...results);
 
@@ -125,12 +127,38 @@ const expandRanges = curry((fn, ranges) => {
  * @param {Array} b
  * @returns {Array} - Result of operator2(a, b) or a
  */
-const callIfLength = fn1 => fn2 => (a, b) => {
+const callIfLength = curry((fn1, fn2, a, b) => {
   if (fn1(a, b).length > 0) {
     return fn2(a, b);
   } else {
     return a;
   }
+});
+
+/**
+ * Returns true if arrays have same elements
+ * @param {array} x
+ * @param {array} y
+ */
+const hasSameItems = (x, y) => {
+  const arrayDiff = difference(x, y);
+  const isDifferent = arrayDiff.length > 0;
+  return !isDifferent;
+};
+
+/**
+ * array of arrays, multiple equivalent sets ->
+ * remove equivalent array, regardless of order ->
+ * array of arrays, one of each set
+ * @param {Array[]} sets - An array of arrays
+ */
+const uniqueSets = sets => {
+  return uniqWith(hasSameItems, sets);
+};
+
+const trace = label => x => {
+  console.log(label, x);
+  return x;
 };
 
 /**
@@ -163,7 +191,9 @@ const getAdjacent = curry((searchTrees, item) => {
  *   - callIfLength(operation, comparison op, array, array)
  * @todo write test for getClusters
  */
-const getClusters = _.compose(_.uniq, callIfLength(_.intersection, _.union), _.uniq);
+const getClusters = _.compose(
+// refactor
+uniqueSets, trace('after callIfLength:'), callIfLength(_.intersection, _.union), trace('before callIfLength:'), uniqueSets);
 
 /**
  * Group items using tree keys
