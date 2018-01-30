@@ -11,19 +11,19 @@ export default [
     input: 'src/main.js',
     output: {
       file: pkg.browser,
-      format: 'umd'
+      format: 'umd',
     },
     name: 'kdIntervalTree',
     plugins: [
       resolve({
-        preferBuiltins: true
+        preferBuiltins: true,
       }), // so Rollup can find dependencies
       builtins(), // so Rollup can include node global depencencies
       commonjs(), // so Rollup can convert dependencies to an ES module
       babel({
-        exclude: 'node_modules/**' // only transpile our source code
-      })
-    ]
+        exclude: 'node_modules/**', // only transpile our source code
+      }),
+    ],
   },
 
   // CommonJS (for Node) and ES module (for bundlers) build.
@@ -37,16 +37,16 @@ export default [
       'lodash/fp/chunk',
       'lodash/fp/flatten',
       'lodash/fp/intersection',
-      'lodash/fp/map'
+      'lodash/fp/map',
     ],
     output: [
       { file: pkg.main, format: 'cjs' },
-      { file: pkg.module, format: 'es' }
+      { file: pkg.module, format: 'es' },
     ],
     plugins: [
       babel({
-        exclude: 'node_modules/**' // only transpile our source code
-      })
-    ]
-  }
+        exclude: 'node_modules/**', // only transpile our source code
+      }),
+    ],
+  },
 ]

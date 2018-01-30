@@ -10,12 +10,23 @@
   "main": "dist/kd-interval-tree.cjs.js",
   "module": "dist/kd-interval-tree.esm.js",
   "browser": "dist/kd-interval-tree.umd.js",
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "node-interval-tree": "^1.3.3"
+  },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.3",
     "babel-jest": "^21.2.0",
     "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-lodash": "^3.3.2",
     "babel-preset-env": "^1.6.1",
+    "eslint": "^4.16.0",
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
     "husky": "^0.14.3",
     "jest": "^21.2.1",
     "lint-staged": "^6.0.0",
@@ -25,8 +36,7 @@
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.1.0",
-    "rollup-plugin-node-resolve": "^3.0.0",
-    "standard": "^10.0.3"
+    "rollup-plugin-node-resolve": "^3.0.0"
   },
   "scripts": {
     "build": "rollup -c",
@@ -34,7 +44,7 @@
     "test": "jest",
     "test-watch": "jest --watch",
     "precommit": "lint-staged",
-    "pretest": "standard"
+    "pretest": "eslint src/** test/**"
   },
   "files": ["dist"],
   "jest": {
@@ -44,23 +54,16 @@
   },
   "lint-staged": {
     "*.{js}": [
-      "prettier --no-semi --single-quote --write",
-      "standard --fix",
+      "prettier --write",
+      "eslint --fix src/**",
       "git add"
     ],
     "*.{json,css,md}": ["prettier --write", "git add"]
   },
   "prettier": {
+    "printWidth": 65,
     "semi": false,
-    "singleQuote": true
-  },
-  "standard": {
-    "parser": "babel-eslint",
-    "ignore": ["node_modules/**", "dist/"]
-  },
-  "dependencies": {
-    "babel-plugin-lodash": "^3.3.2",
-    "lodash": "^4.17.4",
-    "node-interval-tree": "^1.3.3"
+    "singleQuote": true,
+    "trailingComma": "all"
   }
 }

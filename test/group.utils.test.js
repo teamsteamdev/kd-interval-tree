@@ -5,15 +5,23 @@ import {
   expandRanges,
   callIfLength,
   hasSameItems,
-  uniqueSets
+  uniqueSets,
 } from '../src/group.utils'
 
 describe('getRanges', () => {
   it('should get range values from item', () => {
-    const partial = getRanges([['left', 'right'], ['bottom', 'top']])
+    const partial = getRanges([
+      ['left', 'right'],
+      ['bottom', 'top'],
+    ])
     expect(partial).toBeInstanceOf(Function)
 
-    const result = partial({ left: 7, right: 10, bottom: 8, top: 9 })
+    const result = partial({
+      left: 7,
+      right: 10,
+      bottom: 8,
+      top: 9,
+    })
     expect(result).toEqual([[7, 10], [8, 9]])
   })
 })

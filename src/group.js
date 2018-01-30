@@ -6,7 +6,7 @@ import {
   expandRanges,
   getRanges,
   callIfLength,
-  uniqueSets
+  uniqueSets,
 } from './group.utils'
 
 /**
@@ -25,7 +25,7 @@ export const getAdjacent = curry((searchTrees, item) => {
   const composed = compose(
     searchTrees(_.intersection),
     expandRanges(Math.min),
-    getRanges(keys)
+    getRanges(keys),
   )
 
   return composed(item)
@@ -48,7 +48,7 @@ export const getClusters = sets => {
 
   const uniqueAdjacents = uniqueSets(sets)
   const clusters = uniqueAdjacents.map(set =>
-    sets.reduce(uniteIfIntersect, set)
+    sets.reduce(uniteIfIntersect, set),
   )
   const uniqueGroups = uniqueSets(clusters)
 

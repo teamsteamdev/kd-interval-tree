@@ -15,7 +15,9 @@ const addToTree = curry((tree, [lowKey, highKey], item) => {
   const inserted = tree.insert(low, high, item)
 
   if (!inserted) {
-    throw new Error(`${item} was not inserted into ${lowKey}, ${highKey} tree.`)
+    throw new Error(
+      `${item} was not inserted into ${lowKey}, ${highKey} tree.`,
+    )
   }
 })
 

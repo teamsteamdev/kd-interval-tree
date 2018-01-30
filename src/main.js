@@ -18,7 +18,7 @@ const kdIntervalTree = curry((keys, items) => {
 
   return {
     searchTrees,
-    groups
+    groups,
   }
 })
 

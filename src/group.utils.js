@@ -17,7 +17,11 @@ export const getRanges = curry((rangeKeys, item) => {
   const flatKeys = flatten(rangeKeys)
   const getMinMax = a => [Math.min(...a), Math.max(...a)]
 
-  const getRange = compose(map(getMinMax), chunk(2), at(flatKeys))
+  const getRange = compose(
+    map(getMinMax),
+    chunk(2),
+    at(flatKeys),
+  )
 
   return getRange(item)
 })
