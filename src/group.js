@@ -14,10 +14,6 @@ import {
  * expandRange -> Ranges increased by func result ->
  * searchTrees(intersection) -> All Items in expanded range
  * @function getAdjacent
- * @todo write tests for helper functions
- *   - expandRange
- *   - getRange
- * @todo write test for getAdjacent
  */
 export const getAdjacent = curry((searchTrees, item) => {
   const { keys } = searchTrees

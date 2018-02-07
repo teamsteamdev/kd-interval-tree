@@ -17,7 +17,7 @@ const search = trees => (range, i) => {
  *
  * @function searchTrees
  * @param {IntervalTree[]}   trees   Each IntervalTree should contain the same set of objects mapped with different keys.
- * @param {function(array, array): array}   operator   Any lodash set operator (intersection, without, ect...), or similar function.
+ * @param {function(array, array): array}   operator   Any lodash set operator (intersection, without, etc...), or similar function.
  * @param {number[]}    ranges   Pairs of numbers correlating to the trees param. Each pair represents an interval to search within.
  * @returns
  */

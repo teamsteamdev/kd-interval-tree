@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import _ from 'lodash/fp'
 
-import kdIntervalTree from '../src/main'
+import { kdIntervalTree, getGroupsFromKD } from '../src/main'
 
 describe('kdIntervalTree', () => {
   it('should initialize correctly', () => {
@@ -58,16 +58,13 @@ describe('kdIntervalTree', () => {
     const partial = kdIntervalTree(keys)
     expect(partial).toBeInstanceOf(Function)
 
-    const { searchTrees, groups } = partial(items)
+    const searchTrees = partial(items)
 
     expect(searchTrees).toBeDefined()
     expect(searchTrees).toBeInstanceOf(Function)
     expect(searchTrees).toHaveProperty('trees')
     expect(searchTrees).toHaveProperty('items', items)
     expect(searchTrees).toHaveProperty('keys', keys)
-
-    expect(groups).toBeDefined()
-    expect(groups).toBeInstanceOf(Array)
   })
 
   it('should search ranges in trees', () => {
@@ -112,7 +109,7 @@ describe('kdIntervalTree', () => {
       },
     ]
 
-    const { searchTrees } = kdIntervalTree(keys, items)
+    const searchTrees = kdIntervalTree(keys, items)
     const result = searchTrees(_.intersection, [[0, 2], [0, 2]])
 
     expect(result).toBeInstanceOf(Array)
@@ -142,10 +139,12 @@ describe('kdIntervalTree', () => {
       { id: 7, bottom: 9, top: 10, left: 9, right: 10 },
     ]
 
-    const { groups: result } = kdIntervalTree(keys, [
+    const searchTree = kdIntervalTree(keys, [
       ...group1,
       ...group2,
     ])
+
+    const result = getGroupsFromKD(searchTree)
 
     expect(result).toBeInstanceOf(Array)
     expect(result.length).toBe(2)
