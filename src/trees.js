@@ -12,13 +12,7 @@ import IntervalTree from 'node-interval-tree'
 const addToTree = curry((tree, [lowKey, highKey], item) => {
   const values = [item[lowKey], item[highKey]]
   const [low, high] = [Math.min(...values), Math.max(...values)]
-  const inserted = tree.insert(low, high, item)
-
-  if (!inserted) {
-    throw new Error(
-      `${item} was not inserted into ${lowKey}, ${highKey} tree.`,
-    )
-  }
+  tree.insert(low, high, item)
 })
 
 const createTrees = (rangeKeys, items) => {
