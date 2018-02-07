@@ -2,12 +2,11 @@ import curry from 'lodash/fp/curry'
 import IntervalTree from 'node-interval-tree'
 
 /**
- * Once the initial params are applied, use in Array.map to populate an interval tree, returning true or an Error if the operation was not successful.
+ * Once the initial params are applied, use in Array.map to populate an interval tree.
  *
  * @param {IntervalTree} tree - IntervalTree from 'node-interval-tree'
  * @param {string} lowKey - Low interval key name
  * @param {string} highKey - High interval key name
- * @returns {function(item): true|Error} true or an Error if the item was not added to the tree
  */
 const addToTree = curry((tree, [lowKey, highKey], item) => {
   const values = [item[lowKey], item[highKey]]
