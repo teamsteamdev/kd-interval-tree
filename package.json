@@ -1,6 +1,6 @@
 {
   "name": "kd-interval-tree",
-  "version": "0.3.1",
+  "version": "0.4",
   "description": "Create and search layered interval trees",
   "license": "MIT",
   "author": {
@@ -46,7 +46,6 @@
     "test-ci":
       "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "test-watch": "jest --watch",
-    "precommit": "lint-staged",
     "pretest": "eslint src/** test/**"
   },
   "files": ["dist"],

@@ -10,21 +10,16 @@ import map from 'lodash/fp/map';
 import uniqWith from 'lodash/fp/uniqWith';
 
 /**
- * Once the initial params are applied, use in Array.map to populate an interval tree, returning true or an Error if the operation was not successful.
+ * Once the initial params are applied, use in Array.map to populate an interval tree.
  *
  * @param {IntervalTree} tree - IntervalTree from 'node-interval-tree'
  * @param {string} lowKey - Low interval key name
  * @param {string} highKey - High interval key name
- * @returns {function(item): true|Error} true or an Error if the item was not added to the tree
  */
 const addToTree = curry((tree, [lowKey, highKey], item) => {
   const values = [item[lowKey], item[highKey]];
   const [low, high] = [Math.min(...values), Math.max(...values)];
-  const inserted = tree.insert(low, high, item);
-
-  if (!inserted) {
-    throw new Error(`${item} was not inserted into ${lowKey}, ${highKey} tree.`);
-  }
+  tree.insert(low, high, item);
 });
 
 const createTrees = (rangeKeys, items) => {
@@ -61,7 +56,7 @@ const search = trees => (range, i) => {
  *
  * @function searchTrees
  * @param {IntervalTree[]}   trees   Each IntervalTree should contain the same set of objects mapped with different keys.
- * @param {function(array, array): array}   operator   Any lodash set operator (intersection, without, ect...), or similar function.
+ * @param {function(array, array): array}   operator   Any lodash set operator (intersection, without, etc...), or similar function.
  * @param {number[]}    ranges   Pairs of numbers correlating to the trees param. Each pair represents an interval to search within.
  * @returns
  */
@@ -156,20 +151,11 @@ const uniqueSets = sets => {
   return uniqWith(hasSameItems, sets);
 };
 
-const trace = label => x => {
-  console.log(label, x);
-  return x;
-};
-
 /**
  * Item -> getRange(keys)(Item) -> Item ranges ->
  * expandRange -> Ranges increased by func result ->
  * searchTrees(intersection) -> All Items in expanded range
  * @function getAdjacent
- * @todo write tests for helper functions
- *   - expandRange
- *   - getRange
- * @todo write test for getAdjacent
  */
 const getAdjacent = curry((searchTrees, item) => {
   const { keys } = searchTrees;
@@ -191,9 +177,15 @@ const getAdjacent = curry((searchTrees, item) => {
  *   - callIfLength(operation, comparison op, array, array)
  * @todo write test for getClusters
  */
-const getClusters = _.compose(
-// refactor
-uniqueSets, trace('after callIfLength:'), callIfLength(_.intersection, _.union), trace('before callIfLength:'), uniqueSets);
+const getClusters = sets => {
+  const uniteIfIntersect = callIfLength(_.intersection, _.union);
+
+  const uniqueAdjacents = uniqueSets(sets);
+  const clusters = uniqueAdjacents.map(set => sets.reduce(uniteIfIntersect, set));
+  const uniqueGroups = uniqueSets(clusters);
+
+  return uniqueGroups;
+};
 
 /**
  * Group items using tree keys
@@ -219,12 +211,8 @@ const getGroups = searchTrees => {
 const kdIntervalTree = curry((keys, items) => {
   const trees = createTrees(keys, items);
   const searchTrees = createSearchTrees(trees);
-  const groups = getGroups(searchTrees);
 
-  return {
-    searchTrees,
-    groups
-  };
+  return searchTrees;
 });
 
-export default kdIntervalTree;
+export { kdIntervalTree, getGroups as getGroupsFromKD };
