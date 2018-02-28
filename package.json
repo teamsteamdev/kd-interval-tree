@@ -1,6 +1,6 @@
 {
   "name": "kd-interval-tree",
-  "version": "0.4",
+  "version": "0.4.1",
   "description": "Create and search layered interval trees",
   "license": "MIT",
   "author": {
@@ -40,7 +40,7 @@
     "rollup-plugin-node-resolve": "^3.0.0"
   },
   "scripts": {
-    "build": "rollup -c",
+    "build": "NODE_ENV=production rollup -c",
     "start": "rollup -c -w",
     "test": "jest",
     "test-ci":
