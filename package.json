@@ -40,7 +40,7 @@
     "rollup-plugin-node-resolve": "^3.0.0"
   },
   "scripts": {
-    "build": "rollup -c",
+    "build": "NODE_ENV=production rollup -c",
     "start": "rollup -c -w",
     "test": "jest",
     "test-ci":

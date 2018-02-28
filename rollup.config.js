@@ -30,14 +30,17 @@ export default [
   {
     input: 'src/main.js',
     external: [
-      'node-interval-tree',
-      'lodash/fp/curry',
-      'lodash/fp/compose',
       'lodash/fp/at',
       'lodash/fp/chunk',
+      'lodash/fp/compose',
+      'lodash/fp/curry',
+      'lodash/fp/difference',
       'lodash/fp/flatten',
       'lodash/fp/intersection',
       'lodash/fp/map',
+      'lodash/fp/union',
+      'lodash/fp/uniqWith',
+      'node-interval-tree',
     ],
     output: [
       { file: pkg.main, format: 'cjs' },
